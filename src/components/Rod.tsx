@@ -1,13 +1,18 @@
+import { Bead } from './Bead';
+
+const BEADS_PER_ROD = 10;
+
 type RodProps = {
+  beadColorClassName: string;
   colorClassName: string;
   index: number;
 };
 
-export function Rod({ colorClassName, index }: RodProps) {
+export function Rod({ beadColorClassName, colorClassName, index }: RodProps) {
   return (
     <div
-      aria-label={`Rod ${index + 1}`}
-      className="relative flex min-h-0 items-center"
+      aria-label={`Rod ${index + 1} with ${BEADS_PER_ROD} beads grouped at the left end`}
+      className="relative flex min-h-0 items-center overflow-visible"
     >
       <div className="h-5 w-full rounded-full border-[3px] border-ink bg-white shadow-[0_5px_0_#171316] sm:h-6 sm:border-4" />
       <div
@@ -22,6 +27,13 @@ export function Rod({ colorClassName, index }: RodProps) {
         aria-hidden="true"
         className="absolute right-0 size-7 rounded-full border-4 border-ink bg-paper sm:size-8"
       />
+      {Array.from({ length: BEADS_PER_ROD }, (_, beadIndex) => (
+        <Bead
+          colorClassName={beadColorClassName}
+          index={beadIndex}
+          key={beadIndex}
+        />
+      ))}
     </div>
   );
 }

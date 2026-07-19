@@ -13,6 +13,7 @@ export default defineConfig(({ mode }) => {
     preview: {
       host: '0.0.0.0',
       port: 8080,
+      allowedHosts: true,
     },
     define: {
       __APP_TITLE__: JSON.stringify(

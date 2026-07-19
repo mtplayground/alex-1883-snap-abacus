@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { PointerEvent as ReactPointerEvent } from 'react';
 
 import {
@@ -6,13 +6,16 @@ import {
   TRACK_MAX,
   TRACK_MIN,
   clamp,
+  positionForSlot,
   resolveDraggedBeads,
+  snapBeadsToSlots,
 } from '../lib/beadPhysics';
 import type { RodState } from '../types/abacus';
 import { Rod } from './Rod';
 
 const ROD_COUNT = 10;
 const BEADS_PER_ROD = 10;
+const SETTLE_DURATION_MS = 560;
 
 const rodPalette = [
   'bg-pool',
@@ -44,8 +47,10 @@ function createInitialRods(): RodState[] {
     beads: Array.from({ length: BEADS_PER_ROD }, (_, beadIndex) => ({
       beadIndex,
       id: `rod-${rodIndex}-bead-${beadIndex}`,
-      position: TRACK_MIN + beadIndex * DEFAULT_MIN_BEAD_GAP,
+      isSettling: false,
+      position: positionForSlot(beadIndex),
       rodIndex,
+      slot: beadIndex,
     })),
     id: `rod-${rodIndex}`,
     rodIndex,
@@ -58,6 +63,21 @@ export function AbacusFrame() {
   const dragRef = useRef<DragInteraction | null>(null);
   const latestTargetRef = useRef<number | null>(null);
   const animationFrameRef = useRef<number | null>(null);
+  const settleTimeoutsRef = useRef<Record<number, number>>({});
+
+  useEffect(() => {
+    const settleTimeouts = settleTimeoutsRef.current;
+
+    return () => {
+      if (animationFrameRef.current !== null) {
+        window.cancelAnimationFrame(animationFrameRef.current);
+      }
+
+      Object.values(settleTimeouts).forEach((timeoutId) => {
+        window.clearTimeout(timeoutId);
+      });
+    };
+  }, []);
 
   function updateDraggedBeads() {
     animationFrameRef.current = null;
@@ -103,6 +123,34 @@ export function AbacusFrame() {
       TRACK_MIN,
       TRACK_MAX,
     );
+  }
+
+  function clearSettlingAfterAnimation(rodIndex: number) {
+    const existingTimeout = settleTimeoutsRef.current[rodIndex];
+
+    if (existingTimeout) {
+      window.clearTimeout(existingTimeout);
+    }
+
+    settleTimeoutsRef.current[rodIndex] = window.setTimeout(() => {
+      setRods((currentRods) =>
+        currentRods.map((rod) => {
+          if (rod.rodIndex !== rodIndex) {
+            return rod;
+          }
+
+          return {
+            ...rod,
+            beads: rod.beads.map((bead) => ({
+              ...bead,
+              isSettling: false,
+            })),
+          };
+        }),
+      );
+
+      delete settleTimeoutsRef.current[rodIndex];
+    }, SETTLE_DURATION_MS);
   }
 
   function handleBeadPointerDown(
@@ -154,13 +202,43 @@ export function AbacusFrame() {
       return;
     }
 
+    event.preventDefault();
+
+    const finalPosition = positionFromPointer(event.clientX, drag);
+
+    if (animationFrameRef.current !== null) {
+      window.cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
 
+    setRods((currentRods) =>
+      currentRods.map((rod) => {
+        if (rod.rodIndex !== drag.rodIndex) {
+          return rod;
+        }
+
+        return {
+          ...rod,
+          beads: snapBeadsToSlots(
+            resolveDraggedBeads(
+              rod.beads,
+              drag.beadIndex,
+              finalPosition,
+              drag.minGap,
+            ),
+          ),
+        };
+      }),
+    );
+
     dragRef.current = null;
     latestTargetRef.current = null;
     setActiveBeadId(null);
+    clearSettlingAfterAnimation(drag.rodIndex);
   }
 
   return (

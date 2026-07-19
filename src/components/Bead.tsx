@@ -28,12 +28,14 @@ export function Bead({
   return (
     <button
       aria-label={`Rod ${bead.rodIndex + 1}, bead ${bead.beadIndex + 1}`}
-      className={`absolute top-1/2 z-20 size-[clamp(0.82rem,2.45vw,1.55rem)] -translate-x-1/2 -translate-y-1/2 touch-none rounded-full border-[3px] border-ink ${colorClassName} shadow-[4px_4px_0_#171316] outline-none transition-[box-shadow,filter] duration-100 will-change-[left] focus-visible:ring-4 focus-visible:ring-white/90 active:cursor-grabbing sm:border-4 ${
+      className={`bead-button absolute top-1/2 z-20 size-[clamp(0.82rem,2.45vw,1.55rem)] touch-none rounded-full border-[3px] border-ink ${colorClassName} shadow-[4px_4px_0_#171316] outline-none will-change-[left,transform] focus-visible:ring-4 focus-visible:ring-white/90 active:cursor-grabbing sm:border-4 ${
         isActive
           ? 'cursor-grabbing brightness-110 shadow-[2px_2px_0_#171316]'
           : 'cursor-grab'
       }`}
       data-bead
+      data-dragging={isActive}
+      data-settling={bead.isSettling}
       onPointerCancel={onPointerCancel}
       onPointerDown={(event) =>
         onPointerDown(event, bead.rodIndex, bead.beadIndex)

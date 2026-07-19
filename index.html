@@ -63,7 +63,7 @@
           }
           var style = document.createElement('style');
           style.textContent =
-            '@media (max-width: 640px){#mctai-watermark{right:50%;transform:translateX(50%);bottom:12px;max-width:calc(100vw - 24px)}}';
+            '@media (max-width: 640px){#mctai-watermark{right:50% !important;transform:translateX(50%);bottom:12px !important;max-width:calc(100vw - 24px)}}';
           document.head.appendChild(style);
         }
         if (document.readyState === 'loading') {

@@ -1,0 +1,98 @@
+# Architecture Plan: alex-1883-snap-abacus
+
+## Product Direction
+
+Build `alex-1883-snap-abacus` as a purely client-side React + Tailwind single-page app. The app is an interactive, playful, high-contrast abacus widget: 10 rods, 10 beads per rod, smooth constrained dragging, collision behavior, energetic snap-and-bounce settling, and a live tally.
+
+No backend, accounts, database, or server-origin logic is needed.
+
+## Proposed Module Structure
+
+```text
+/
+  .env.example
+  package.json
+  vite.config.ts
+  tailwind.config.*
+  postcss.config.*
+  eslint.config.*
+  index.html
+  src/
+    main.tsx
+    App.tsx
+    index.css
+    components/
+      AbacusStage.tsx
+      AbacusFrame.tsx
+      Rod.tsx
+      Bead.tsx
+      CountReadout.tsx
+    hooks/
+      useAbacusState.ts
+      useBeadDrag.ts
+      useResponsiveStage.ts
+    lib/
+      abacusGeometry.ts
+      beadPhysics.ts
+      count.ts
+      easing.ts
+    types/
+      abacus.ts
+    test/
+      e2e/
+        abacus.spec.ts
+```
+
+## Shared Types And State
+
+Keep the app state small and explicit:
+
+```ts
+type RodIndex = number;
+type BeadIndex = number;
+
+type BeadState = {
+  id: string;
+  rodIndex: RodIndex;
+  beadIndex: BeadIndex;
+  slot: number;
+  x: number;
+  isDragging: boolean;
+  isSettling: boolean;
+};
+
+type RodState = {
+  rodIndex: RodIndex;
+  beads: BeadState[];
+};
+
+type AbacusState = {
+  rods: RodState[];
+};
+```
+
+Use derived geometry rather than hard-coded pixel positions wherever possible. `abacusGeometry.ts` should map responsive stage dimensions to rod start/end coordinates, bead radius, slot spacing, and hit areas. `count.ts` should derive the readout from bead state instead of storing a second count value.
+
+## Issue Dependencies
+
+1. Issue #1 creates the Vite React + Tailwind app shell, linting/formatting, `.env.example`, global styles, and centered stage.
+2. Issue #2 adds the frame and 10 rods using the stage geometry model.
+3. Issue #3 adds 100 beads and the initial per-rod bead layout.
+4. Issue #4 introduces pointer handling, constrained movement, and collision/push behavior.
+5. Issue #5 layers snap-to-slot, bounce easing, and drag squash/stretch on top of the same bead state.
+6. Issue #6 derives and renders the live count from bead positions.
+7. Issue #7 hardens responsive layout, mobile sizing, and touch behavior.
+8. Issue #8 adds Playwright end-to-end coverage and final motion/performance polish.
+
+## Key Design Decisions
+
+- Use React + Vite + TypeScript for a small client-only SPA.
+- Use Tailwind for layout and theme primitives, with component-level CSS only when motion or geometry reads better outside utility classes.
+- Render the abacus with regular DOM elements instead of SVG/canvas at first. This keeps pointer events, accessibility labels, and tests straightforward. If later performance profiling shows DOM limits, the geometry and state modules should allow a controlled migration.
+- Keep all bead movement in one canonical state model. Drag, collision, snap, bounce, readout, and tests should consume the same rod/bead data.
+- Model rods as one-dimensional tracks with discrete slots. Pointer movement converts screen coordinates to a clamped rod coordinate; collision resolution adjusts neighboring beads while preserving bead order.
+- Use `PointerEvent` APIs with pointer capture so mouse and touch share one interaction path.
+- Snap should resolve to valid non-overlapping slots before animation starts. Animation should decorate state transitions, not create a second source of truth.
+- The count readout should be derived by counting beads moved away from the starting side per rod, keeping the rule easy to test and adjust.
+- Responsive behavior should be geometry-driven: the frame, rods, bead radius, and slots scale from a measured stage rectangle with min/max constraints to avoid clipping.
+- End-to-end tests should cover desktop and mobile viewports, pointer/touch dragging, collision ordering, snap settling, and count accuracy.

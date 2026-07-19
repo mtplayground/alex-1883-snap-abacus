@@ -34,6 +34,7 @@ export function Bead({
       data-bead
       data-dragging={isActive}
       data-settling={bead.isSettling}
+      data-testid={`bead-${bead.rodIndex}-${bead.beadIndex}`}
       onPointerCancel={onPointerCancel}
       onPointerDown={(event) =>
         onPointerDown(event, bead.rodIndex, bead.beadIndex)

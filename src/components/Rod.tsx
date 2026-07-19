@@ -33,21 +33,21 @@ export function Rod({
   return (
     <div
       aria-label={`Rod ${rodIndex + 1} with ${beads.length} draggable beads`}
-      className="relative flex min-h-0 items-center overflow-visible"
+      className="relative flex min-h-0 touch-none select-none items-center overflow-visible"
       data-rod-track
     >
-      <div className="h-5 w-full rounded-full border-[3px] border-ink bg-white shadow-[0_5px_0_#171316] sm:h-6 sm:border-4" />
+      <div className="rod-base w-full border-ink bg-white" />
       <div
         aria-hidden="true"
-        className={`absolute left-4 right-4 h-2 rounded-full ${colorClassName} sm:h-3`}
+        className={`rod-core absolute ${colorClassName}`}
       />
       <div
         aria-hidden="true"
-        className="absolute left-0 size-7 rounded-full border-4 border-ink bg-paper sm:size-8"
+        className="rod-cap absolute left-0 border-ink bg-paper"
       />
       <div
         aria-hidden="true"
-        className="absolute right-0 size-7 rounded-full border-4 border-ink bg-paper sm:size-8"
+        className="rod-cap absolute right-0 border-ink bg-paper"
       />
       {beads.map((bead) => (
         <Bead

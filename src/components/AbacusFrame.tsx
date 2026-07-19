@@ -245,18 +245,18 @@ export function AbacusFrame() {
   }
 
   return (
-    <div className="flex w-full flex-col items-center justify-center gap-6">
+    <div className="abacus-layout flex w-full flex-col items-center justify-center">
       <div
         aria-label="Abacus frame with 10 horizontal rods and 100 beads"
-        className="relative mx-8 flex aspect-[5/3] w-[min(78vw,820px)] min-w-0 items-center justify-center"
+        className="abacus-frame-shell relative flex min-w-0 items-center justify-center"
       >
-        <div className="absolute inset-0 rounded-[2rem] border-[12px] border-ink bg-[#fff4b8] shadow-[14px_14px_0_#171316]" />
-        <div className="absolute inset-x-8 top-8 h-7 rounded-full border-4 border-ink bg-punch" />
-        <div className="absolute inset-x-8 bottom-8 h-7 rounded-full border-4 border-ink bg-pool" />
-        <div className="absolute inset-y-8 left-8 w-7 rounded-full border-4 border-ink bg-sun" />
-        <div className="absolute inset-y-8 right-8 w-7 rounded-full border-4 border-ink bg-[#8d5cff]" />
+        <div className="frame-panel absolute inset-0 border-ink bg-[#fff4b8]" />
+        <div className="frame-rail frame-rail-top border-ink bg-punch" />
+        <div className="frame-rail frame-rail-bottom border-ink bg-pool" />
+        <div className="frame-rail frame-rail-left border-ink bg-sun" />
+        <div className="frame-rail frame-rail-right border-ink bg-[#8d5cff]" />
 
-        <div className="relative z-10 grid h-[72%] w-[82%] grid-rows-10 gap-3 sm:gap-4">
+        <div className="rod-grid relative z-10 grid grid-rows-10">
           {rods.map((rod, index) => (
             <Rod
               activeBeadId={activeBeadId}

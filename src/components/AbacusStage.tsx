@@ -8,12 +8,12 @@ export function AbacusStage({ title }: AbacusStageProps) {
   return (
     <section
       aria-label={`${title} abacus stage`}
-      className="relative flex h-[min(72vh,660px)] min-h-[420px] w-full max-w-5xl items-center justify-center rounded-[2rem] border-[10px] border-ink bg-paper shadow-stage outline outline-4 outline-offset-[-22px] outline-pool"
+      className="abacus-stage relative flex w-full max-w-6xl items-center justify-center border-ink bg-paper"
     >
-      <div className="absolute inset-x-8 top-8 h-5 rounded-full bg-punch" />
-      <div className="absolute inset-x-8 bottom-8 h-5 rounded-full bg-sun" />
-      <div className="absolute inset-y-10 left-8 w-5 rounded-full bg-pool" />
-      <div className="absolute inset-y-10 right-8 w-5 rounded-full bg-punch" />
+      <div className="stage-accent stage-accent-top bg-punch" />
+      <div className="stage-accent stage-accent-bottom bg-sun" />
+      <div className="stage-accent stage-accent-left bg-pool" />
+      <div className="stage-accent stage-accent-right bg-punch" />
 
       <AbacusFrame />
     </section>

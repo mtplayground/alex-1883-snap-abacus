@@ -249,6 +249,7 @@ export function AbacusFrame() {
       <div
         aria-label="Abacus frame with 10 horizontal rods and 100 beads"
         className="abacus-frame-shell relative flex min-w-0 items-center justify-center"
+        data-testid="abacus-frame"
       >
         <div className="frame-panel absolute inset-0 border-ink bg-[#fff4b8]" />
         <div className="frame-rail frame-rail-top border-ink bg-punch" />

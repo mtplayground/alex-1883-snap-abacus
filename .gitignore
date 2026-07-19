@@ -1,5 +1,7 @@
 target/
 dist/
+test-results/
+playwright-report/
 node_modules/
 .gh_token
 .database_url

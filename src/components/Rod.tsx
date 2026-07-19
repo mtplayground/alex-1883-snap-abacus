@@ -35,6 +35,7 @@ export function Rod({
       aria-label={`Rod ${rodIndex + 1} with ${beads.length} draggable beads`}
       className="relative flex min-h-0 touch-none select-none items-center overflow-visible"
       data-rod-track
+      data-testid={`rod-${rodIndex}`}
     >
       <div className="rod-base w-full border-ink bg-white" />
       <div

@@ -10,7 +10,9 @@ import {
   resolveDraggedBeads,
   snapBeadsToSlots,
 } from '../lib/beadPhysics';
+import { deriveAbacusCount } from '../lib/count';
 import type { RodState } from '../types/abacus';
+import { CountReadout } from './CountReadout';
 import { Rod } from './Rod';
 
 const ROD_COUNT = 10;
@@ -60,6 +62,7 @@ function createInitialRods(): RodState[] {
 export function AbacusFrame() {
   const [rods, setRods] = useState(createInitialRods);
   const [activeBeadId, setActiveBeadId] = useState<string | null>(null);
+  const count = deriveAbacusCount(rods);
   const dragRef = useRef<DragInteraction | null>(null);
   const latestTargetRef = useRef<number | null>(null);
   const animationFrameRef = useRef<number | null>(null);
@@ -242,32 +245,35 @@ export function AbacusFrame() {
   }
 
   return (
-    <div
-      aria-label="Abacus frame with 10 horizontal rods and 100 beads"
-      className="relative mx-8 flex aspect-[5/3] w-[min(78vw,820px)] min-w-0 items-center justify-center"
-    >
-      <div className="absolute inset-0 rounded-[2rem] border-[12px] border-ink bg-[#fff4b8] shadow-[14px_14px_0_#171316]" />
-      <div className="absolute inset-x-8 top-8 h-7 rounded-full border-4 border-ink bg-punch" />
-      <div className="absolute inset-x-8 bottom-8 h-7 rounded-full border-4 border-ink bg-pool" />
-      <div className="absolute inset-y-8 left-8 w-7 rounded-full border-4 border-ink bg-sun" />
-      <div className="absolute inset-y-8 right-8 w-7 rounded-full border-4 border-ink bg-[#8d5cff]" />
+    <div className="flex w-full flex-col items-center justify-center gap-6">
+      <div
+        aria-label="Abacus frame with 10 horizontal rods and 100 beads"
+        className="relative mx-8 flex aspect-[5/3] w-[min(78vw,820px)] min-w-0 items-center justify-center"
+      >
+        <div className="absolute inset-0 rounded-[2rem] border-[12px] border-ink bg-[#fff4b8] shadow-[14px_14px_0_#171316]" />
+        <div className="absolute inset-x-8 top-8 h-7 rounded-full border-4 border-ink bg-punch" />
+        <div className="absolute inset-x-8 bottom-8 h-7 rounded-full border-4 border-ink bg-pool" />
+        <div className="absolute inset-y-8 left-8 w-7 rounded-full border-4 border-ink bg-sun" />
+        <div className="absolute inset-y-8 right-8 w-7 rounded-full border-4 border-ink bg-[#8d5cff]" />
 
-      <div className="relative z-10 grid h-[72%] w-[82%] grid-rows-10 gap-3 sm:gap-4">
-        {rods.map((rod, index) => (
-          <Rod
-            activeBeadId={activeBeadId}
-            beadColorClassName={beadPalette[index % beadPalette.length]}
-            beads={rod.beads}
-            colorClassName={rodPalette[index % rodPalette.length]}
-            key={rod.id}
-            onBeadPointerCancel={endDrag}
-            onBeadPointerDown={handleBeadPointerDown}
-            onBeadPointerMove={handleBeadPointerMove}
-            onBeadPointerUp={endDrag}
-            rodIndex={rod.rodIndex}
-          />
-        ))}
+        <div className="relative z-10 grid h-[72%] w-[82%] grid-rows-10 gap-3 sm:gap-4">
+          {rods.map((rod, index) => (
+            <Rod
+              activeBeadId={activeBeadId}
+              beadColorClassName={beadPalette[index % beadPalette.length]}
+              beads={rod.beads}
+              colorClassName={rodPalette[index % rodPalette.length]}
+              key={rod.id}
+              onBeadPointerCancel={endDrag}
+              onBeadPointerDown={handleBeadPointerDown}
+              onBeadPointerMove={handleBeadPointerMove}
+              onBeadPointerUp={endDrag}
+              rodIndex={rod.rodIndex}
+            />
+          ))}
+        </div>
       </div>
+      <CountReadout count={count} />
     </div>
   );
 }
